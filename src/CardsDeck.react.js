@@ -5,11 +5,18 @@ class CardsDeck extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          deck: this._makeDeck()
+          deck: this._makeDeck(),
+          playersHands: []
         };
+        this._dealPlayers = this._dealPlayers.bind(this);
     }
 
     render() {
+        if (this.state.playersHands) {
+            this.state.playersHands.map((hand)=> {
+                console.log('hand', hand);
+            })
+        }
         return (
             <div className="CardsDeck">
                 My Deck
@@ -31,7 +38,7 @@ class CardsDeck extends Component {
 
         ranks.map(
             function(rank) {
-                card(rank)
+                return card(rank)
             }
         );
 
@@ -39,9 +46,26 @@ class CardsDeck extends Component {
     }
 
     _dealPlayers(event) {
-        //playersHands = [{'player 1': [], 'player 2': [], 'player n': [] ....}]
-        console.log("players", event.target.value);
-        //favorites[Math.floor(Math.random() * favorites.length)]
+        let playersHands = []
+        const totalPlayers = event.target.value;
+        for(let i=0; i<totalPlayers; i++) {
+            let randomCard1 = this.state.deck[Math.floor(Math.random() * this.state.deck.length)];
+            this._removeCardFromDeck(randomCard1);
+            let randomCard2 = this.state.deck[Math.floor(Math.random() * this.state.deck.length)];
+            this._removeCardFromDeck(randomCard2);
+
+            let hand = [randomCard1, randomCard2];
+            playersHands.push({player: hand});
+
+            this.setState({ playersHands: playersHands })
+        }
+    }
+
+    _removeCardFromDeck(card) {
+        var i = this.state.deck.indexOf(card);
+        if(i !== -1) {
+            this.state.deck.splice(i, 1);
+        }
     }
 }
 
