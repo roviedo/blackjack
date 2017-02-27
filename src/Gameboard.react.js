@@ -14,12 +14,11 @@ class Gameboard extends Component {
     render() {
         return (
             <div>
-                <div className="GameBoard">
-                    <button onClick={this._newGame}>New Game</button>
-                </div>
                 {this.state.showComponent ?
                    <CardsDeck /> :
-                   null
+                   <div className="GameBoard">
+                       <button onClick={this._newGame}>New Game</button>
+                   </div>
                 }
             </div>
         );

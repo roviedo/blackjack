@@ -9,18 +9,30 @@ class CardsDeck extends Component {
           playersHands: []
         };
         this._dealPlayers = this._dealPlayers.bind(this);
+        this._hit = this._hit.bind(this);
+        this._stand = this._stand.bind(this);
     }
 
     render() {
+        let playerHandsComponents;
         if (this.state.playersHands) {
-            this.state.playersHands.map((hand)=> {
-                console.log('hand', hand);
-            })
+            playerHandsComponents = this.state.playersHands.map((hand, index) => {
+                return (
+                    <div key={index}>Player { index }
+                        <div className="hand">Card 1: {hand.player[0]}</div>
+                        <div className="hand">Card 2: {hand.player[1]}</div>
+                        <button onClick={this._hit} value={index}>Hit</button>
+                        <button onClick={this._stand} value={index}>Stand</button>
+                    </div>
+                )
+            });
         }
+
         return (
             <div className="CardsDeck">
-                My Deck
+                Number of players:
                 <input value={this.state.inputValue} onChange={this._dealPlayers}/>
+                <div>{ playerHandsComponents }</div>
             </div>
         );
     }
@@ -49,9 +61,9 @@ class CardsDeck extends Component {
         let playersHands = []
         const totalPlayers = event.target.value;
         for(let i=0; i<totalPlayers; i++) {
-            let randomCard1 = this.state.deck[Math.floor(Math.random() * this.state.deck.length)];
+            let randomCard1 = this._getCard();
             this._removeCardFromDeck(randomCard1);
-            let randomCard2 = this.state.deck[Math.floor(Math.random() * this.state.deck.length)];
+            let randomCard2 = this._getCard();
             this._removeCardFromDeck(randomCard2);
 
             let hand = [randomCard1, randomCard2];
@@ -61,11 +73,27 @@ class CardsDeck extends Component {
         }
     }
 
+    _getCard() {
+        return this.state.deck[Math.floor(Math.random() * this.state.deck.length)];
+    }
+
     _removeCardFromDeck(card) {
         var i = this.state.deck.indexOf(card);
         if(i !== -1) {
             this.state.deck.splice(i, 1);
         }
+    }
+
+    _hit(event) {
+        let card = this._getCard();
+        this._removeCardFromDeck(card);
+        console.log(card);
+        //add card to players hand
+    }
+
+    _stand(event) {
+        console.log('stand', event.target.value);
+        //lock players moves
     }
 }
 
