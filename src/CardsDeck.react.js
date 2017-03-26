@@ -31,7 +31,7 @@ class CardsDeck extends Component {
             );
             playerHand = this.state.playerHand.map((card, index) => {
                 return (
-                    <div className="hand">Card { index+1 }: { card }</div>
+                    <div key={ index } className="hand">Card { index+1 }: { card }</div>
                 )
             });
 
@@ -56,6 +56,12 @@ class CardsDeck extends Component {
     }
 
     _makeDeck() {
+        /*TODO: Different data structure for deck
+            [
+                {rank: "A", suit: "Clubs", value: 1},
+                {rank: "Q", suit: "Spades", value: 12}
+            ]
+        */
         let deck = [];
         const ranks = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
         const suits = ["Clubs", "Spades", "Hearts", "Diamonds"];
@@ -109,7 +115,13 @@ class CardsDeck extends Component {
         let playerHand = this.state.playerHand.slice();
         playerHand.push(card);
         //add card to players hand
-        this.setState({ playerHand })
+        this.setState({ playerHand }, () => {
+            this._dealerMove()
+        });
+    }
+
+    _dealerMove() {
+        console.log(this.state.dealerHand);
     }
 
     _stand(event) {
