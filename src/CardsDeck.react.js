@@ -6,33 +6,51 @@ class CardsDeck extends Component {
         super(props);
         this.state = {
           deck: this._makeDeck(),
-          playersHands: []
+          dealerHand: [],
+          playerHand: []
         };
         this._dealPlayers = this._dealPlayers.bind(this);
         this._hit = this._hit.bind(this);
         this._stand = this._stand.bind(this);
     }
 
+    componentDidMount() {
+        this._dealPlayers();
+    }
+
     render() {
-        let playerHandsComponents;
-        if (this.state.playersHands) {
-            playerHandsComponents = this.state.playersHands.map((hand, index) => {
+        let playerHand;
+        let dealer;
+        let player;
+        if (this.state.playerHand && this.state.dealerHand) {
+            dealer = (
+                <div> Dealer
+                    <div className="hand">Card 1: {this.state.dealerHand[0]}</div>
+                    <div className="hand">Card 2: {this.state.dealerHand[1]}</div>
+                </div>
+            );
+            playerHand = this.state.playerHand.map((card, index) => {
                 return (
-                    <div key={index}>Player { index }
-                        <div className="hand">Card 1: {hand.player[0]}</div>
-                        <div className="hand">Card 2: {hand.player[1]}</div>
-                        <button onClick={this._hit} value={index}>Hit</button>
-                        <button onClick={this._stand} value={index}>Stand</button>
-                    </div>
+                    <div className="hand">Card { index+1 }: { card }</div>
                 )
             });
+
+            player = (
+                <div> Player
+                    { playerHand }
+                    <button onClick={this._hit}>Hit</button>
+                    <button onClick={this._stand}>Stand</button>
+                </div>
+            )
         }
 
         return (
             <div className="CardsDeck">
-                Number of players:
-                <input value={this.state.inputValue} onChange={this._dealPlayers}/>
-                <div>{ playerHandsComponents }</div>
+                Player vs. Dealer
+                <div>
+                    { dealer }
+                    { player }
+                </div>
             </div>
         );
     }
@@ -57,20 +75,20 @@ class CardsDeck extends Component {
         return deck;
     }
 
-    _dealPlayers(event) {
-        let playersHands = []
-        const totalPlayers = event.target.value;
-        for(let i=0; i<totalPlayers; i++) {
-            let randomCard1 = this._getCard();
-            this._removeCardFromDeck(randomCard1);
-            let randomCard2 = this._getCard();
-            this._removeCardFromDeck(randomCard2);
+    _dealPlayers() {
+        this.setState({
+            dealerHand: this._getHand(),
+            playerHand: this._getHand()
+        });
+    }
 
-            let hand = [randomCard1, randomCard2];
-            playersHands.push({player: hand});
+    _getHand() {
+        let randomCard1 = this._getCard();
+        this._removeCardFromDeck(randomCard1);
+        let randomCard2 = this._getCard();
+        this._removeCardFromDeck(randomCard2);
 
-            this.setState({ playersHands: playersHands })
-        }
+        return [randomCard1, randomCard2];
     }
 
     _getCard() {
@@ -85,15 +103,19 @@ class CardsDeck extends Component {
     }
 
     _hit(event) {
+        // Dealer must draw on 16 and stand on all 17's" are printed on the table.
         let card = this._getCard();
         this._removeCardFromDeck(card);
-        console.log(card);
+        let playerHand = this.state.playerHand.slice();
+        playerHand.push(card);
         //add card to players hand
+        this.setState({ playerHand })
     }
 
     _stand(event) {
         console.log('stand', event.target.value);
         //lock players moves
+        // calculate winner
     }
 }
 
