@@ -18,22 +18,35 @@ class CardsDeck extends Component {
         this._dealPlayers();
     }
 
+    componentDidUpdate() {
+        this._calculateWinner();
+    }
+
     render() {
+        let dealerHand;
         let playerHand;
         let dealer;
         let player;
         if (this.state.playerHand && this.state.dealerHand) {
-            dealer = (
-                <div> Dealer
-                    <div className="hand">Card 1: {this.state.dealerHand[0]}</div>
-                    <div className="hand">Card 2: {this.state.dealerHand[1]}</div>
-                </div>
-            );
-            playerHand = this.state.playerHand.map((card, index) => {
+            dealerHand = this.state.dealerHand.map((card, index) => {
+                let cardStr = card.rank+" of "+card.suit;
                 return (
-                    <div key={ index } className="hand">Card { index+1 }: { card }</div>
+                    <div key={ index } className="hand">Card { index+1 }: { cardStr }</div>
                 )
             });
+
+            playerHand = this.state.playerHand.map((card, index) => {
+                let cardStr = card.rank+" of "+card.suit;
+                return (
+                    <div key={ index } className="hand">Card { index+1 }: { cardStr }</div>
+                )
+            });
+
+            dealer = (
+                <div> Dealer
+                    { dealerHand }
+                </div>
+            );
 
             player = (
                 <div> Player
@@ -63,12 +76,26 @@ class CardsDeck extends Component {
             ]
         */
         let deck = [];
-        const ranks = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+        const rankValues = {
+            "A": 1, "2": 2, "3": 3, "4": 4,
+            "5": 5, "6": 6, "7": 7, "8": 8,
+            "9": 9, "10": 10, "J": 11, "Q": 12,
+            "K": 13
+        }
+        const ranks = [
+            "A", "2", "3", "4", "5",
+            "6", "7", "8", "9", "10",
+            "J", "Q", "K"
+        ];
         const suits = ["Clubs", "Spades", "Hearts", "Diamonds"];
 
         let card = function(rank) {
             for(let i=0; i<suits.length;i++) {
-                deck.push(rank + " " + suits[i])
+                deck.push({
+                    rank: rank,
+                    suit: suits[i],
+                    value: rankValues[rank]
+                })
             }
         }
 
@@ -85,7 +112,7 @@ class CardsDeck extends Component {
         this.setState({
             dealerHand: this._getHand(),
             playerHand: this._getHand()
-        });
+        }, () => {this._calculateWinner()});
     }
 
     _getHand() {
@@ -98,7 +125,9 @@ class CardsDeck extends Component {
     }
 
     _getCard() {
-        return this.state.deck[Math.floor(Math.random() * this.state.deck.length)];
+        return this.state.deck[
+            Math.floor(Math.random() * this.state.deck.length)
+        ];
     }
 
     _removeCardFromDeck(card) {
@@ -109,19 +138,27 @@ class CardsDeck extends Component {
     }
 
     _hit(event) {
-        // Dealer must draw on 16 and stand on all 17's" are printed on the table.
         let card = this._getCard();
         this._removeCardFromDeck(card);
         let playerHand = this.state.playerHand.slice();
         playerHand.push(card);
-        //add card to players hand
-        this.setState({ playerHand }, () => {
-            this._dealerMove()
-        });
+        this.setState({ playerHand });
     }
 
-    _dealerMove() {
-        console.log(this.state.dealerHand);
+    _calculateWinner() {
+        // Dealer must draw on 16 and stand on all 17's" are printed on the table.
+        let dealerScore = this._getPlayerScore(this.state.dealerHand);
+        let playerScore = this._getPlayerScore(this.state.playerHand);
+        console.log('dealerScore', dealerScore, 'playerScore', playerScore);
+    }
+
+    _getPlayerScore(hand) {
+        let score = 0;
+        for (let card in hand) {
+            score += hand[card].value
+        }
+
+        return score;
     }
 
     _stand(event) {
