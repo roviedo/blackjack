@@ -6,7 +6,8 @@ class Gameboard extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          showComponent: false
+          showComponent: false,
+          winner: null
         };
         this._newGame = this._newGame.bind(this);
     }

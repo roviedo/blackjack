@@ -7,7 +7,8 @@ class CardsDeck extends Component {
         this.state = {
           deck: this._makeDeck(),
           dealerHand: [],
-          playerHand: []
+          playerHand: [],
+          winner: null
         };
         this._dealPlayers = this._dealPlayers.bind(this);
         this._hit = this._hit.bind(this);
@@ -16,10 +17,6 @@ class CardsDeck extends Component {
 
     componentDidMount() {
         this._dealPlayers();
-    }
-
-    componentDidUpdate() {
-        this._calculateWinner();
     }
 
     render() {
@@ -142,14 +139,24 @@ class CardsDeck extends Component {
         this._removeCardFromDeck(card);
         let playerHand = this.state.playerHand.slice();
         playerHand.push(card);
-        this.setState({ playerHand });
+        this.setState({ playerHand }, () => {
+            this._calculateWinner()
+        });
     }
 
     _calculateWinner() {
         // Dealer must draw on 16 and stand on all 17's" are printed on the table.
+        let winner = null;
         let dealerScore = this._getPlayerScore(this.state.dealerHand);
         let playerScore = this._getPlayerScore(this.state.playerHand);
         console.log('dealerScore', dealerScore, 'playerScore', playerScore);
+        if (playerScore == 21) {
+            winner = 'player';
+        } else if (dealerScore == 21) {
+            winner = 'dealer';
+        }
+
+        this.setState({ winner });
     }
 
     _getPlayerScore(hand) {
@@ -161,10 +168,8 @@ class CardsDeck extends Component {
         return score;
     }
 
-    _stand(event) {
-        console.log('stand', event.target.value);
-        //lock players moves
-        // calculate winner
+    _stand() {
+        this._calculateWinner();
     }
 }
 
