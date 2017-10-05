@@ -6,6 +6,8 @@ class CardsDeck extends Component {
         super(props);
         this.state = {
           deck: this._makeDeck(),
+          turn: null,
+          isPlayerActive: true,
           dealerHand: [],
           playerHand: [],
           winner: null
@@ -19,11 +21,26 @@ class CardsDeck extends Component {
         this._dealPlayers();
     }
 
+    componentDidUpdate() {
+        if (this.state.turn === 'dealer') {
+            this._dealerPlay();
+        }
+    }
+
     render() {
         let dealerHand;
         let playerHand;
         let dealer;
         let player;
+        let playerActions;
+        if(this.state.winner) {
+            const winner = this.state.winner
+            return (
+                <div>
+                    The winner is the: { winner }
+                </div>
+            )
+        }
         if (this.state.playerHand && this.state.dealerHand) {
             dealerHand = this.state.dealerHand.map((card, index) => {
                 let cardStr = card.rank+" of "+card.suit;
@@ -38,7 +55,14 @@ class CardsDeck extends Component {
                     <div key={ index } className="hand">Card { index+1 }: { cardStr }</div>
                 )
             });
-
+            if (this.state.isPlayerActive) {
+                playerActions = (
+                    <div>
+                        <button onClick={this._hit}>Hit</button>
+                        <button onClick={this._stand}>Stand</button>
+                    </div>
+                )
+            }
             dealer = (
                 <div> Dealer
                     { dealerHand }
@@ -48,8 +72,7 @@ class CardsDeck extends Component {
             player = (
                 <div> Player
                     { playerHand }
-                    <button onClick={this._hit}>Hit</button>
-                    <button onClick={this._stand}>Stand</button>
+                    { playerActions }
                 </div>
             )
         }
@@ -76,8 +99,8 @@ class CardsDeck extends Component {
         const rankValues = {
             "A": 1, "2": 2, "3": 3, "4": 4,
             "5": 5, "6": 6, "7": 7, "8": 8,
-            "9": 9, "10": 10, "J": 11, "Q": 12,
-            "K": 13
+            "9": 9, "10": 10, "J": 10, "Q": 10,
+            "K": 10
         }
         const ranks = [
             "A", "2", "3", "4", "5",
@@ -106,10 +129,15 @@ class CardsDeck extends Component {
     }
 
     _dealPlayers() {
+        // this.setState({
+        //     dealerHand: this._getHand(),
+        //     playerHand: this._getHand()
+        // }, () => {this._calculateWinner()});
         this.setState({
             dealerHand: this._getHand(),
-            playerHand: this._getHand()
-        }, () => {this._calculateWinner()});
+            playerHand: this._getHand(),
+            turn: 'player'
+        });
     }
 
     _getHand() {
@@ -134,42 +162,88 @@ class CardsDeck extends Component {
         }
     }
 
-    _hit(event) {
+    _hit() {
+        let playerHand = this.state.playerHand.slice();
+        const newHand = this._dealCard(playerHand);
+        let playerScore = this._getPlayerScore(this.state.playerHand);
+        if (playerScore >= 21) {
+            this._calculateWinner();
+        } else {
+            this.setState({ playerHand: newHand, turn: 'dealer' }, () => {
+                this._dealerPlay()
+            });
+        }
+    }
+
+    _dealerPlay() {
+        let dealerScore = this._getPlayerScore(this.state.dealerHand);
+        if (dealerScore <= 16) {
+            let dealerHand = this.state.dealerHand.slice();
+            const newHand = this._dealCard(dealerHand);
+            this.setState({ dealerHand: newHand, turn: 'player' }, () => {
+                this._calculateWinner()
+            });
+        } else {
+            this.setState({ turn: 'player' }, () => {
+                this._calculateWinner()
+            });
+        }
+    }
+
+    _dealCard(hand) {
         let card = this._getCard();
         this._removeCardFromDeck(card);
-        let playerHand = this.state.playerHand.slice();
-        playerHand.push(card);
-        this.setState({ playerHand }, () => {
-            this._calculateWinner()
-        });
+        hand.push(card);
+        return hand;
     }
 
     _calculateWinner() {
-        // Dealer must draw on 16 and stand on all 17's" are printed on the table.
+        // Dealer must draw on 16 and stand on all 17's are printed on the table.
         let winner = null;
         let dealerScore = this._getPlayerScore(this.state.dealerHand);
         let playerScore = this._getPlayerScore(this.state.playerHand);
         console.log('dealerScore', dealerScore, 'playerScore', playerScore);
-        if (playerScore == 21) {
+        if (playerScore === 21) {
             winner = 'player';
-        } else if (dealerScore == 21) {
+        } else if (dealerScore === 21) {
             winner = 'dealer';
+        } else if (playerScore > 21 && dealerScore > 21) {
+            if (playerScore > dealerScore) {
+                winner = 'dealer';
+            } else {
+                winner = 'player';
+            }
+        } else if (dealerScore < 21 && playerScore > 21) {
+            winner = 'dealer';
+        } else if (!this.state.isPlayerActive) {
+            if (dealerScore <= 17) {
+                this._dealerPlay();
+            } else if (dealerScore > playerScore) {
+                winner = 'player';
+            } else {
+                winner = 'dealer';
+            }
         }
-
         this.setState({ winner });
     }
 
     _getPlayerScore(hand) {
         let score = 0;
-        for (let card in hand) {
-            score += hand[card].value
+        // for (let card in hand) {
+        for (let card=0; card < hand.length; card++) {
+            score += hand[card].value;
         }
 
         return score;
     }
 
     _stand() {
-        this._calculateWinner();
+        this.setState(
+            {
+                turn: 'dealer',
+                isPlayerActive: false
+            }
+        );
     }
 }
 
