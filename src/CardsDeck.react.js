@@ -129,10 +129,6 @@ class CardsDeck extends Component {
     }
 
     _dealPlayers() {
-        // this.setState({
-        //     dealerHand: this._getHand(),
-        //     playerHand: this._getHand()
-        // }, () => {this._calculateWinner()});
         this.setState({
             dealerHand: this._getHand(),
             playerHand: this._getHand(),
@@ -229,8 +225,7 @@ class CardsDeck extends Component {
 
     _getPlayerScore(hand) {
         let score = 0;
-        // for (let card in hand) {
-        for (let card=0; card < hand.length; card++) {
+        for (let card = 0; card < hand.length; card++) {
             score += hand[card].value;
         }
 
