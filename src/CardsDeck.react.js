@@ -43,16 +43,16 @@ class CardsDeck extends Component {
         }
         if (this.state.playerHand && this.state.dealerHand) {
             dealerHand = this.state.dealerHand.map((card, index) => {
-                let cardStr = card.rank+" of "+card.suit;
+                let cardStr = card.rank+" "+card.suit;
                 return (
-                    <div key={ index } className="hand">Card { index+1 }: { cardStr }</div>
+                    <div key={ index } className="card"><span>{ cardStr }</span></div>
                 )
             });
 
             playerHand = this.state.playerHand.map((card, index) => {
-                let cardStr = card.rank+" of "+card.suit;
+                let cardStr = card.rank+" "+card.suit;
                 return (
-                    <div key={ index } className="hand">Card { index+1 }: { cardStr }</div>
+                    <div key={ index } className="card"><span>{ cardStr }</span></div>
                 )
             });
             if (this.state.isPlayerActive) {
@@ -64,15 +64,14 @@ class CardsDeck extends Component {
                 )
             }
             dealer = (
-                <div> Dealer
-                    { dealerHand }
+                <div className="deck">
+                    { this._renderHand(dealerHand) }
                 </div>
             );
 
             player = (
-                <div> Player
-                    { playerHand }
-                    { playerActions }
+                <div className="deck">
+                    { this._renderHand(playerHand) }
                 </div>
             )
         }
@@ -81,11 +80,18 @@ class CardsDeck extends Component {
             <div className="CardsDeck">
                 Player vs. Dealer
                 <div>
+                    Dealer
                     { dealer }
+                    Player
                     { player }
+                    { playerActions }
                 </div>
             </div>
         );
+    }
+
+    _renderHand(hand) {
+        return hand;
     }
 
     _makeDeck() {
@@ -107,7 +113,7 @@ class CardsDeck extends Component {
             "6", "7", "8", "9", "10",
             "J", "Q", "K"
         ];
-        const suits = ["Clubs", "Spades", "Hearts", "Diamonds"];
+        const suits = ["C", "S", "H", "D"];
 
         let card = function(rank) {
             for(let i=0; i<suits.length;i++) {
@@ -212,6 +218,7 @@ class CardsDeck extends Component {
         } else if (dealerScore < 21 && playerScore > 21) {
             winner = 'dealer';
         } else if (!this.state.isPlayerActive) {
+            //TODO: Need to fix when player stand's and dealer and player score equal each other e.g. 17, 17
             if (dealerScore <= 17) {
                 this._dealerPlay();
             } else if (dealerScore > playerScore) {
