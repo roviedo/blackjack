@@ -37,15 +37,23 @@
     box-shadow: 3px 3px 3px gray;
 }
 
-.card span {
+.card .cardTopLeft, .card .cardBottomRight {
     position: absolute;
-    top: 5px;
-    left: 5px;
     color: blue;
     width: 20px;
 }
 
-.card span img {
+.card .cardTopLeft {
+  top: 5px;
+  left: 5px;
+}
+
+.card .cardBottomRight {
+  bottom: 5px;
+  right: 5px;
+}
+
+.card .cardTopLeft img, .card .cardBottomRight img {
     max-height: 100%;
     max-width: 100%;
 }

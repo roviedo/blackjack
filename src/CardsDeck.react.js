@@ -50,10 +50,14 @@ class CardsDeck extends Component {
             dealerHand = this.state.dealerHand.map((card, index) => {
                 return (
                     <div key={ index } className="card">
-                        <span>
+                        <div className="cardTopLeft">
                             { card.rank }
                             { this._getImage(card.suit) }
-                        </span>
+                        </div>
+                        <div className="cardBottomRight">
+                            { card.rank }
+                            { this._getImage(card.suit) }
+                        </div>
                     </div>
                 )
             });
@@ -61,10 +65,14 @@ class CardsDeck extends Component {
             playerHand = this.state.playerHand.map((card, index) => {
                 return (
                     <div key={ index } className="card">
-                        <span>
+                        <div className="cardTopLeft">
                             { card.rank }
                             { this._getImage(card.suit) }
-                        </span>
+                        </div>
+                        <div className="cardBottomRight">
+                            { card.rank }
+                            { this._getImage(card.suit) }
+                        </div>
                     </div>
                 )
             });
