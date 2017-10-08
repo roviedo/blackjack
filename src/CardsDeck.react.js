@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
+import spadesImg from './images/spades.png';
+import clubsImg from './images/clubs.png';
+import heartsImg from './images/hearts.png';
+import diamondsImg from './images/diamonds.png';
+
 
 class CardsDeck extends Component {
     constructor(props) {
@@ -43,16 +48,24 @@ class CardsDeck extends Component {
         }
         if (this.state.playerHand && this.state.dealerHand) {
             dealerHand = this.state.dealerHand.map((card, index) => {
-                let cardStr = card.rank+" "+card.suit;
                 return (
-                    <div key={ index } className="card"><span>{ cardStr }</span></div>
+                    <div key={ index } className="card">
+                        <span>
+                            { card.rank }
+                            { this._getImage(card.suit) }
+                        </span>
+                    </div>
                 )
             });
 
             playerHand = this.state.playerHand.map((card, index) => {
-                let cardStr = card.rank+" "+card.suit;
                 return (
-                    <div key={ index } className="card"><span>{ cardStr }</span></div>
+                    <div key={ index } className="card">
+                        <span>
+                            { card.rank }
+                            { this._getImage(card.suit) }
+                        </span>
+                    </div>
                 )
             });
             if (this.state.isPlayerActive) {
@@ -87,6 +100,22 @@ class CardsDeck extends Component {
                     { playerActions }
                 </div>
             </div>
+        );
+    }
+
+    _getImage(suit) {
+        let imageUrl;
+        if (suit === 'S') {
+            imageUrl = spadesImg;
+        } else if (suit === 'C') {
+            imageUrl = clubsImg;
+        } else if (suit === 'D') {
+            imageUrl = diamondsImg;
+        } else if (suit === 'H') {
+            imageUrl = heartsImg;
+        }
+        return (
+            <img src={imageUrl} alt="" />
         );
     }
 

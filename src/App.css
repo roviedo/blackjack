@@ -42,6 +42,12 @@
     top: 5px;
     left: 5px;
     color: blue;
+    width: 20px;
+}
+
+.card span img {
+    max-height: 100%;
+    max-width: 100%;
 }
 
 @keyframes App-logo-spin {
