@@ -43,7 +43,10 @@ class Game extends Component {
             const winner = this.state.winner
             return (
                 <div>
-                    The winner is the: { winner }
+                    <div>
+                        The winner is the: { winner }
+                    </div>
+                    <button className="button" onClick={this._handleClick}>Exit</button>
                 </div>
             )
         }
@@ -296,6 +299,11 @@ class Game extends Component {
             }
         }
         this.setState({ winner });
+    }
+
+    _handleClick = (e) => {
+        e.preventDefault();
+        window.location.href = '/';
     }
 }
 
