@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import CardsDeck from './CardsDeck.react';
+import Game from './Game.react';
 
 class Gameboard extends Component {
     constructor(props) {
@@ -16,9 +16,9 @@ class Gameboard extends Component {
         return (
             <div>
                 {this.state.showComponent ?
-                   <CardsDeck /> :
+                   <Game /> :
                    <div className="GameBoard">
-                       <button onClick={this._newGame}>New Game</button>
+                       <button className="button" onClick={this._newGame}>New Game</button>
                    </div>
                 }
             </div>
